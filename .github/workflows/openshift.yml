@@ -108,8 +108,8 @@ jobs:
     # oc-login works on all platforms, but oc must be installed first.
     # The GitHub Ubuntu runner already includes oc.
     # Otherwise, https://github.com/redhat-actions/oc-installer#readme is available.
-  openshift-cd:
-    name: CD
+  openshift-cd-stage:
+    name: CD-stage
     runs-on: ubuntu-20.04
     needs: openshift-ci
     steps:
@@ -123,7 +123,32 @@ jobs:
         openshift_token: ${{ env.OPENSHIFT_TOKEN }}
         insecure_skip_tls_verify: true
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+    - name: Helm
+      run: |
+        helm upgrade -f ./charts/values.yaml reverseword-stage ./charts --set environment=stage --set namespace=reverse-word-stage-user70 --set tag= {{env.TAG}} -n helm-charts
+
+  
 
     # This step should create a deployment, service, and route to run your app and expose it to the internet.
     # Feel free to replace this with 'oc apply', 'helm install', or however you like to deploy your app.
-    
+  openshift-cd-PROD:
+    name: CD-prod
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+     
+    # https://github.com/redhat-actions/oc-login#readme
+    - name: Log in to OpenShift
+      uses: redhat-actions/oc-login@v1
+      with:
+        openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
+        openshift_token: ${{ env.OPENSHIFT_TOKEN }}
+        insecure_skip_tls_verify: true
+        namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+    - name: Helm
+      run: |
+        helm upgrade -f ./charts/values.yaml reverseword ./charts --set environment=prod --set namespace=reverse-word-prod-user70 --set tag= {{env.TAG}} -n helm-charts
+
+    # This step should create a deployment, service, and route to run your app and expose it to the internet.
+    # Feel free to replace this with 'oc apply', 'helm install', or however you like to deploy your app.
+      
