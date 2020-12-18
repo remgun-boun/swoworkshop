@@ -62,6 +62,7 @@ on:
 
 jobs:
   openshift-ci:
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
     name: Build
     runs-on: ubuntu-20.04
 
@@ -109,6 +110,7 @@ jobs:
     # The GitHub Ubuntu runner already includes oc.
     # Otherwise, https://github.com/redhat-actions/oc-installer#readme is available.
   openshift-cd-stage:
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
     name: CD-stage
     runs-on: ubuntu-20.04
     needs: openshift-ci
@@ -132,6 +134,7 @@ jobs:
     # This step should create a deployment, service, and route to run your app and expose it to the internet.
     # Feel free to replace this with 'oc apply', 'helm install', or however you like to deploy your app.
   openshift-cd-PROD:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     name: CD-prod
     runs-on: ubuntu-20.04
     steps:
@@ -148,7 +151,6 @@ jobs:
     - name: Helm
       run: |
         helm upgrade -f ./charts/values.yaml reverseword ./charts --set environment=prod --set namespace=reverse-word-prod-user70 --set tag=workshop -n helm-charts
-
     # This step should create a deployment, service, and route to run your app and expose it to the internet.
     # Feel free to replace this with 'oc apply', 'helm install', or however you like to deploy your app.
       
