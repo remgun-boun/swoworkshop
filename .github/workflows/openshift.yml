@@ -125,7 +125,7 @@ jobs:
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
     - name: Helm
       run: |
-        helm upgrade -f ./charts/values.yaml reverseword-stage ./charts --set environment=stage --set namespace=reverse-word-stage-user70 --set tag= {{env.TAG}} -n helm-charts
+        helm upgrade -f ./charts/values.yaml reverseword-stage ./charts --set environment=stage --set namespace=reverse-word-stage-user70 --set tag= ${{env.TAG}} -n helm-charts
 
   
 
