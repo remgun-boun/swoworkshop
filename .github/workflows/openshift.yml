@@ -61,8 +61,8 @@ on:
     branches: [ main , dev]
 
 jobs:
-  openshift-ci-cd:
-    name: Build and deploy to OpenShift
+  openshift-ci:
+    name: Build
     runs-on: ubuntu-20.04
 
     steps:
@@ -90,6 +90,8 @@ jobs:
         dockerfiles: |
           ./Dockerfile
 
+
+
     # https://github.com/redhat-actions/push-to-registry#readme
     - name: Push to registry
       id: push-to-registry
@@ -106,7 +108,12 @@ jobs:
     # oc-login works on all platforms, but oc must be installed first.
     # The GitHub Ubuntu runner already includes oc.
     # Otherwise, https://github.com/redhat-actions/oc-installer#readme is available.
-
+  openshift-cd:
+    name: CD
+    runs-on: ubuntu-20.04
+    steps:
+     - uses: actions/checkout@v2
+     
     # https://github.com/redhat-actions/oc-login#readme
     - name: Log in to OpenShift
       uses: redhat-actions/oc-login@v1
