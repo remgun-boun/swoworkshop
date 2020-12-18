@@ -125,7 +125,7 @@ jobs:
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
     - name: Helm
       run: |
-        helm upgrade -f ./charts/values.yaml reverseword-stage ./charts --set environment=stage --set namespace=reverse-word-stage-user70 --set tag= workshop -n helm-charts
+        helm upgrade -f ./charts/values.yaml reverseword-stage ./charts --set environment=stage --set namespace=reverse-word-stage-user70 --set tag=workshop -n helm-charts
 
   
 
@@ -147,7 +147,7 @@ jobs:
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
     - name: Helm
       run: |
-        helm upgrade -f ./charts/values.yaml reverseword ./charts --set environment=prod --set namespace=reverse-word-prod-user70 --set tag= workshop -n helm-charts
+        helm upgrade -f ./charts/values.yaml reverseword ./charts --set environment=prod --set namespace=reverse-word-prod-user70 --set tag=workshop -n helm-charts
 
     # This step should create a deployment, service, and route to run your app and expose it to the internet.
     # Feel free to replace this with 'oc apply', 'helm install', or however you like to deploy your app.
