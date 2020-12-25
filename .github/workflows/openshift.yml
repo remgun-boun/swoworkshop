@@ -34,6 +34,7 @@ name: OpenShift
 # https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets
 env:
   # ⬇️ EDIT with your registry and registry path.
+  TOKEN: ${{ secrets.TOKEN }}
   REGISTRY: quay.io/remgun
   # ⬇️ EDIT with your registry username.
   REGISTRY_USER: remgun
@@ -62,6 +63,7 @@ on:
 
 jobs:
   openshift-ci:
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
     name: Build
     runs-on: ubuntu-20.04
 
@@ -109,8 +111,9 @@ jobs:
     # The GitHub Ubuntu runner already includes oc.
     # Otherwise, https://github.com/redhat-actions/oc-installer#readme is available.
   openshift-cd-stage:
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
     name: CD-stage
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: openshift-ci
     steps:
     - uses: actions/checkout@v2
@@ -127,13 +130,27 @@ jobs:
       run: |
         helm upgrade -f ./charts/values.yaml reverseword-stage ./charts --set environment=stage --set namespace=reverse-word-stage-user70 --set tag=workshop -n helm-charts
 
-  
+  pull-request:
+    runs-on: ubuntu-latest
+    needs: openshift-cd-stage
+    steps:
+    - uses: actions/checkout@v2
+    - name: pull-request
+      uses: repo-sync/pull-request@v2
+      with:
+        source_branch: ""                                 # If blank, default: triggered branch
+        destination_branch: "main"                        # If blank, default: master
+        pr_title: "Pulling ${{ github.run_id }} into master" # Title of pull request
+        pr_body: ":crown: *An automated PR*"
+        pr_label: "auto-pr"
+        github_token: ${{ env.TOKEN }}
 
     # This step should create a deployment, service, and route to run your app and expose it to the internet.
     # Feel free to replace this with 'oc apply', 'helm install', or however you like to deploy your app.
   openshift-cd-PROD:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     name: CD-prod
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
      
@@ -148,7 +165,6 @@ jobs:
     - name: Helm
       run: |
         helm upgrade -f ./charts/values.yaml reverseword ./charts --set environment=prod --set namespace=reverse-word-prod-user70 --set tag=workshop -n helm-charts
-
     # This step should create a deployment, service, and route to run your app and expose it to the internet.
     # Feel free to replace this with 'oc apply', 'helm install', or however you like to deploy your app.
       
