@@ -147,6 +147,10 @@ jobs:
       run: |
         helm upgrade -f ./charts/values.yaml reverseword-stage ./charts --set environment=stage --set namespace=reverse-word-stage-user70 --set tag=workshop -n helm-charts
 
+    - name: download Kondukto cli
+      run: |
+        curl -sSL https://cli.kondukto.io | sh
+
     - name: DAST
       run: |
         ./kdt --host https://demo5.kondukto.io --token ${{ secrets.KONDUKTO }} scan -p devsecops_swoworkshop -t owaspzapheadless -b dev
