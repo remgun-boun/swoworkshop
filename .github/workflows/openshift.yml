@@ -113,7 +113,7 @@ jobs:
   openshift-cd-stage:
     if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
     name: CD-stage
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: openshift-ci
     steps:
     - uses: actions/checkout@v2
@@ -150,7 +150,7 @@ jobs:
   openshift-cd-PROD:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     name: CD-prod
-    runs-on: ubuntu-2-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
      
