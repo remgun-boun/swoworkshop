@@ -70,6 +70,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+
     - name: Unit Test
       run: |
         docker build -t reverseword_test:latest -f Dockerfile.test .
@@ -129,6 +130,27 @@ jobs:
     - name: Helm
       run: |
         helm upgrade -f ./charts/values.yaml reverseword-stage ./charts --set environment=stage --set namespace=reverse-word-stage-user70 --set tag=workshop -n helm-charts
+
+            - name: download Kondukto cli
+      run: |
+        curl -sSL https://cli.kondukto.io | sh
+
+    - name: SCA
+      run: |
+        ./kdt --host https://demo5.kondukto.io --token ${{ secrets.KONDUKTO }} scan -p devsecops_swoworkshop -t nancy -b dev
+
+    - name: SAST
+      run: |
+        ./kdt --host https://demo5.kondukto.io --token ${{ secrets.KONDUKTO }} scan -p devsecops_swoworkshop -t gosec -b dev
+
+    - name: CS
+      run: |
+        ./kdt --host https://demo5.kondukto.io --token ${{ secrets.KONDUKTO }} scan -p devsecops_swoworkshop -t trivy -b dev
+
+    - name: DAST
+      run: |
+        ./kdt --host https://demo5.kondukto.io --token ${{ secrets.KONDUKTO }} scan -p devsecops_swoworkshop -t owaspzapheadless -b dev
+
 
   pull-request:
     runs-on: ubuntu-latest
