@@ -72,7 +72,7 @@ jobs:
 
     - name: Unit Test
       run: |
-        docker build -t reverseword_test:latest -f Dockerfile.test
+        docker build -t reverseword_test:latest -f Dockerfile.test .
         docker run reverseword_test:latest
 
     - name: Determine tag
